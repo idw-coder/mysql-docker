@@ -1,5 +1,2 @@
-.env
-data/
-logs/
-*.log
-.DS_Store
+mysql/mysql.env
+app.env

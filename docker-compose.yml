@@ -1,40 +1,35 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql-container
+    env_file: ./mysql/mysql.env
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: myapp_db
-      MYSQL_USER: myapp_user
-      MYSQL_PASSWORD: myapp_password
+      - TZ=Asia/Tokyo
     ports:
       - "3306:3306"
     volumes:
-      - mysql-data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      # 追加の設定ファイル
+      - ./mysql/conf:/etc/mysql/conf.d/:ro
+      - mysqldata:/var/lib/mysql
 
-  express:
-    build: .
-    container_name: express-container
-    ports:
-      - "3000:3000"
+  # Node.js（Express）
+  app:
+    image: node:18
+    env_file: ./app.env
     environment:
-      DB_HOST: mysql
-      DB_USER: myapp_user
-      DB_PASSWORD: myapp_password
-      DB_NAME: myapp_db
-    depends_on:
-      mysql:
-        condition: service_healthy
+      - TZ=Asia/Tokyo
+      - DEBUG=app:*  # デバッグモードを有効化
+    tty: true  # 疑似ターミナルを割り当て
+    ports:
+      - '3000:3000'
     volumes:
-      - ./backend:/app
-    command: bash -c "if [ ! -f package.json ]; then express --view=ejs . && npm install; fi && npm start"
+      - ./src:/app
+    working_dir: /app
+    command: npm start  # コンテナ起動時に実行するコマンド
+    depends_on:
+      - mysql
+
+networks:
+  default:
 
 volumes:
-  mysql-data:
+  mysqldata:

@@ -1,0 +1,11 @@
+{
+    "verbose": true,
+    "legacyWatch": true,
+    "watch": [
+        "routes",
+        "views",
+        "app.js",
+        "bin"
+    ],
+    "ext": "js,json,jade"
+}

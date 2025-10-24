@@ -24,7 +24,7 @@ services:
     volumes:
       - ./src:/app
     working_dir: /app
-    command: npm start  # コンテナ起動時に実行するコマンド
+    command: npm run watch  # コンテナ起動時に実行するコマンド
     depends_on:
       - mysql
 

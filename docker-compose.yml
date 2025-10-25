@@ -7,8 +7,8 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      # 追加の設定ファイル
-      - ./mysql/conf:/etc/mysql/conf.d/:ro
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro # 初期データ
+      - ./mysql/conf:/etc/mysql/conf.d/:ro # 追加の設定ファイル
       - mysqldata:/var/lib/mysql
 
   # Node.js（Express）

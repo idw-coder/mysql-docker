@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const db = require('../db');
+const db = require('../db'); // データベース接続
 
 /* ユーザー一覧取得 */
 router.get('/', async function(req, res, next) {

@@ -1,6 +1,6 @@
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2/promise'); // ライブラリを使用してデータベース接続 → クエリ実行が可能に
 
-// データベース接続プールの作成
+// データベース接続プールの作成（接続プールとは、複数のクライアントからの接続を管理するための機能）
 const pool = mysql.createPool({
   host: process.env.MYSQL_SERVER || 'mysql',
   user: process.env.MYSQL_USER || 'myapp_user',

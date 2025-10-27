@@ -83,7 +83,11 @@ router.post('/verify', async function(req, res, next) {
       return res.status(401).json({ error: 'トークンが提供されていません' });
     }
 
-    // トークンを検証
+    /**
+     * verifyToken() 関数を使用してトークンを検証
+     * @param {string} token - JWTトークン
+     * @returns {object|null} デコードされたペイロード、または null（無効な場合）
+     */
     const decoded = verifyToken(token);
     if (!decoded) {
       return res.status(401).json({ error: 'トークンが無効です' });

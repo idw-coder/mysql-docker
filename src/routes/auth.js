@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
-const db = require('../db');
+// const db = require('../db');
 const { generateToken, verifyToken } = require('../utils/jwt');
+const prisma = require('../prismaClient'); // Prisma クライアントをインポート
 
 /* サインアップ */
 router.post('/signup', async function(req, res, next) {
@@ -9,31 +10,46 @@ router.post('/signup', async function(req, res, next) {
     const { name, email, password } = req.body;
 
     // ユーザーを挿入（UUID を明示的に指定）
-    const [result] = await db.query(
-      'INSERT INTO users (id, name, email, password) VALUES (UUID(), ?, ?, ?)',
-      [name, email, password]
-    );
+    // const [result] = await db.query(
+    //   'INSERT INTO users (id, name, email, password) VALUES (UUID(), ?, ?, ?)',
+    //   [name, email, password]
+    // );
+
 
     // 挿入したユーザーのIDを取得
-    const [userRows] = await db.query(
-      'SELECT id FROM users WHERE email = ? LIMIT 1',
-      [email]
-    );
-    const userId = userRows[0].id;
+    // const [userRows] = await db.query(
+    //   'SELECT id FROM users WHERE email = ? LIMIT 1',
+    //   [email]
+    // );
+    // const userId = userRows[0].id;
 
     // プロフィールを挿入
-    await db.query(
-      'INSERT INTO profiles (id) VALUES (?)',
-      [userId]
-    );
+    // await db.query(
+    //   'INSERT INTO profiles (id) VALUES (?)',
+    //   [userId]
+    // );
+
+    /**
+     * create() で新しいレコードを作成
+     */
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password,
+        profile: {
+          create: {} //
+        }
+      }
+    });
 
     // JWTトークンを生成
-    const token = generateToken(userId);
+    const token = generateToken(user.id);
 
     res.status(201).json({
-      id: userId,
-      name,
-      email,
+      id: user.id,
+      name: user.name,
+      email: user.email,
       token
     });
   } catch (error) {
@@ -47,16 +63,26 @@ router.post('/signin', async function(req, res, next) {
   try {
     const { email, password } = req.body;
 
-    const [rows] = await db.query(
-      'SELECT * FROM users WHERE email = ? AND password = ?',
-      [email, password]
-    );
+    // const [rows] = await db.query(
+    //   'SELECT * FROM users WHERE email = ? AND password = ?',
+    //   [email, password]
+    // );
 
-    if (rows.length === 0) {
+    // const user = rows[0];
+
+    /**
+     * findFirst() で条件に合う最初の1件を取得（複数条件OK）
+     */
+    const user = await prisma.user.findFirst({
+      where: {
+        email,
+        password,
+      }
+    });
+
+    if (!user) {
       return res.status(401).json({ error: 'メールアドレスまたはパスワードが正しくありません' });
     }
-
-    const user = rows[0];
 
     // JWTトークンを生成
     const token = generateToken(user.id);
@@ -94,16 +120,34 @@ router.post('/verify', async function(req, res, next) {
     }
 
     // ユーザー情報を取得
-    const [rows] = await db.query(
-      'SELECT id, name, email FROM users WHERE id = ?',
-      [decoded.userId]
-    );
+    // const [rows] = await db.query(
+    //   'SELECT id, name, email FROM users WHERE id = ?',
+    //   [decoded.userId]
+    // );
 
-    if (rows.length === 0) {
+    // if (rows.length === 0) {
+    //   return res.status(401).json({ error: 'ユーザーが見つかりません' });
+    // }
+
+    // const user = rows[0];
+
+    /**
+     * findUnique() ユニークな値で1件を取得
+     */
+    const user = await prisma.user.findUnique({
+      where: {
+        id: decoded.userId
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true
+      }
+    });
+
+    if (!user) {
       return res.status(401).json({ error: 'ユーザーが見つかりません' });
     }
-
-    const user = rows[0];
 
     res.json({
       id: user.id,

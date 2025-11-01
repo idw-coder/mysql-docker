@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 // const db = require('../db');
 const { generateToken, verifyToken } = require('../utils/jwt');
-const prisma = require('../prismaClient'); // Prisma クライアントをインポート
+const prisma = require('../prisma-client'); // Prisma クライアントをインポート
 
 /* サインアップ */
 router.post('/signup', async function(req, res, next) {
@@ -93,6 +93,7 @@ router.post('/signin', async function(req, res, next) {
       email: user.email,
       token
     });
+    console.log('Signin successful for user ID:', user.id);
   } catch (error) {
     console.error('Signin error:', error);
     res.status(500).json({ error: error.message });

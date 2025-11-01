@@ -1,3 +1,4 @@
+import "dotenv/config"; // .envファイルを読み込目るように追記
 import { defineConfig, env } from "prisma/config";
 
 export default defineConfig({

@@ -95,7 +95,7 @@ router.put('/:id', async function(req, res, next) {
   try {
     const { id } = req.params;
     const { note } = req.body;
-    const { title, content } = note || {};
+    const { title, content, tags } = note || {};
 
     const updateFields = [];
     const updateValues = [];
@@ -108,6 +108,11 @@ router.put('/:id', async function(req, res, next) {
     if (content !== undefined) {
       updateFields.push('content = ?');
       updateValues.push(content);
+    }
+
+    if (tags !== undefined) {
+      updateFields.push('tags = ?');
+      updateValues.push(JSON.stringify(tags));
     }
 
     if (updateFields.length === 0) {

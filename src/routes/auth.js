@@ -38,7 +38,7 @@ router.post('/signup', async function(req, res, next) {
     });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ error: 'ユーザー登録に失敗しました' });
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -69,7 +69,7 @@ router.post('/signin', async function(req, res, next) {
     });
   } catch (error) {
     console.error('Signin error:', error);
-    res.status(500).json({ error: 'ログインに失敗しました' });
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -108,7 +108,7 @@ router.post('/verify', async function(req, res, next) {
     });
   } catch (error) {
     console.error('Verify error:', error);
-    res.status(500).json({ error: 'トークン検証に失敗しました' });
+    res.status(500).json({ error: error.message });
   }
 });
 

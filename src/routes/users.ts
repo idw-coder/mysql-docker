@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
+import express, { Request, Response, NextFunction } from 'express';
+const router = express.Router();
 // const db = require('../db'); // データベース接続
-const prisma = require('../prisma-client');
+import prisma from '../prisma-client';
 
 /**
  * ユーザー一覧取得
@@ -15,7 +15,7 @@ const prisma = require('../prisma-client');
 //     res.status(500).json({ error: 'データベースエラーが発生しました' });
 //   }
 // });
-router.get('/', async function(req, res, next) {
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     /**
      * findMany()はすべてのユーザーを取得
@@ -48,14 +48,14 @@ router.get('/', async function(req, res, next) {
 //     res.status(500).json({ error: 'データベースエラーが発生しました' });
 //   }
 // });
-router.post('/', async function(req, res, next) {
+router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, email } = req.body;
+    const { name, email, password } = req.body;
     /**
      * create()は新しいユーザーを作成
      */
     const user = await prisma.user.create({
-      data: { name, email }
+      data: { name, email, password }
     });
     res.status(201).json(user);
   } catch (error) {
@@ -64,4 +64,4 @@ router.post('/', async function(req, res, next) {
   }
 });
 
-module.exports = router;
+export default router;

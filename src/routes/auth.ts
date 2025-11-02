@@ -1,11 +1,11 @@
-var express = require('express');
-var router = express.Router();
+import express, { Request, Response, NextFunction } from 'express';
+const router = express.Router();
 // const db = require('../db');
-const { generateToken, verifyToken } = require('../utils/jwt');
-const prisma = require('../prisma-client'); // Prisma クライアントをインポート
+import { generateToken, verifyToken } from '../utils/jwt';
+import prisma from '../prisma-client'; // Prisma クライアントをインポート
 
 /* サインアップ */
-router.post('/signup', async function(req, res, next) {
+router.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password } = req.body;
 
@@ -54,12 +54,12 @@ router.post('/signup', async function(req, res, next) {
     });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: (error as Error).message });
   }
 });
 
 /* サインイン */
-router.post('/signin', async function(req, res, next) {
+router.post('/signin', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
 
@@ -96,12 +96,12 @@ router.post('/signin', async function(req, res, next) {
     console.log('Signin successful for user ID:', user.id);
   } catch (error) {
     console.error('Signin error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: (error as Error).message });
   }
 });
 
 /* トークン検証 */
-router.post('/verify', async function(req, res, next) {
+router.post('/verify', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { token } = req.body;
 
@@ -157,8 +157,8 @@ router.post('/verify', async function(req, res, next) {
     });
   } catch (error) {
     console.error('Verify error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: (error as Error).message });
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,9 +1,10 @@
-var express = require('express');
-var router = express.Router();
-const db = require('../db');
+import express, { Request, Response, NextFunction } from 'express';
+const router = express.Router();
+import db from '../db';
+import { RowDataPacket, ResultSetHeader } from 'mysql2';
 
 /* ノート一覧取得 */
-router.get('/', async function(req, res, next) {
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId, parentDocumentId, keyword } = req.query;
 
@@ -12,7 +13,7 @@ router.get('/', async function(req, res, next) {
     }
 
     let query = 'SELECT * FROM notes WHERE user_id = ?';
-    let params = [userId];
+    let params: any[] = [userId];
 
     // 親ドキュメントIDでフィルタ
     if (parentDocumentId !== undefined) {
@@ -28,7 +29,7 @@ router.get('/', async function(req, res, next) {
 
     query += ' ORDER BY created_at DESC';
 
-    const [rows] = await db.query(query, params);
+    const [rows] = await db.query<RowDataPacket[]>(query, params);
     res.json(rows);
   } catch (error) {
     console.error('Notes fetch error:', error);
@@ -37,7 +38,7 @@ router.get('/', async function(req, res, next) {
 });
 
 /* 単一ノート取得 */
-router.get('/:id', async function(req, res, next) {
+router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const { userId } = req.query;
@@ -46,7 +47,7 @@ router.get('/:id', async function(req, res, next) {
       return res.status(400).json({ error: 'userIdが必要です' });
     }
 
-    const [rows] = await db.query(
+    const [rows] = await db.query<RowDataPacket[]>(
       'SELECT * FROM notes WHERE id = ? AND user_id = ?',
       [id, userId]
     );
@@ -63,7 +64,7 @@ router.get('/:id', async function(req, res, next) {
 });
 
 /* ノート作成 */
-router.post('/', async function(req, res, next) {
+router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId, params } = req.body;
     const { title, parentId } = params || {};
@@ -72,13 +73,13 @@ router.post('/', async function(req, res, next) {
       return res.status(400).json({ error: 'userIdが必要です' });
     }
 
-    const [result] = await db.query(
+    const [result] = await db.query<ResultSetHeader>(
       'INSERT INTO notes (user_id, title, content, parent_document) VALUES (?, ?, ?, ?)',
       [userId, title || 'Untitled', '', parentId || null]
     );
 
     // 作成したノートを取得
-    const [rows] = await db.query(
+    const [rows] = await db.query<RowDataPacket[]>(
       'SELECT * FROM notes WHERE id = ?',
       [result.insertId]
     );
@@ -91,14 +92,14 @@ router.post('/', async function(req, res, next) {
 });
 
 /* ノート更新 */
-router.put('/:id', async function(req, res, next) {
+router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const { note } = req.body;
     const { title, content, tags } = note || {};
 
-    const updateFields = [];
-    const updateValues = [];
+    const updateFields: string[] = [];
+    const updateValues: any[] = [];
 
     if (title !== undefined) {
       updateFields.push('title = ?');
@@ -127,7 +128,7 @@ router.put('/:id', async function(req, res, next) {
     );
 
     // 更新後のノートを取得
-    const [rows] = await db.query('SELECT * FROM notes WHERE id = ?', [id]);
+    const [rows] = await db.query<RowDataPacket[]>('SELECT * FROM notes WHERE id = ?', [id]);
     res.json(rows[0]);
   } catch (error) {
     console.error('Note update error:', error);
@@ -136,7 +137,7 @@ router.put('/:id', async function(req, res, next) {
 });
 
 /* ノート削除 */
-router.delete('/:id', async function(req, res, next) {
+router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
 
@@ -148,4 +149,4 @@ router.delete('/:id', async function(req, res, next) {
   }
 });
 
-module.exports = router;
+export default router;

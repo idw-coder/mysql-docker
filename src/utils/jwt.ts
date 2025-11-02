@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+import jwt, { SignOptions } from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -8,11 +8,11 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
  * @param {string} userId - ユーザーID
  * @returns {string} JWTトークン
  */
-function generateToken(userId) {
+export function generateToken(userId: string): string {
   return jwt.sign(
     { userId }, // ペイロード（トークンに含めるデータ）
     JWT_SECRET, // 秘密鍵
-    { expiresIn: JWT_EXPIRES_IN } // 有効期限
+    { expiresIn: JWT_EXPIRES_IN } as SignOptions // 有効期限
   );
 }
 
@@ -21,16 +21,11 @@ function generateToken(userId) {
  * @param {string} token - JWTトークン
  * @returns {object|null} デコードされたペイロード、または null（無効な場合）
  */
-function verifyToken(token) {
+export function verifyToken(token: string): { userId: string } | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
     return decoded;
   } catch (error) {
     return null; // トークンが無効または期限切れ
   }
 }
-
-module.exports = {
-  generateToken,
-  verifyToken
-};

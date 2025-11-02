@@ -1,7 +1,7 @@
 services:
   mysql:
     image: mysql:8.0
-    env_file: ./mysql/mysql.env
+    env_file: ./src/.env
     environment:
       - TZ=Asia/Tokyo
     ports:
@@ -14,7 +14,7 @@ services:
   # Node.js（Express）
   app:
     image: node:18
-    env_file: ./app.env
+    env_file: ./src/.env
     environment:
       - TZ=Asia/Tokyo
       - DEBUG=app:*  # デバッグモードを有効化
@@ -24,7 +24,8 @@ services:
     volumes:
       - ./src:/app
     working_dir: /app
-    command: npm run watch  # コンテナ起動時に実行するコマンド
+    # command: npm run watch  # コンテナ起動時に実行するコマンド ローカルでするとOK
+    command: npm run start
     depends_on:
       - mysql
 

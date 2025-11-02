@@ -1,4 +1,4 @@
-const mysql = require('mysql2/promise'); // ライブラリを使用してデータベース接続 → クエリ実行が可能に
+import mysql from 'mysql2/promise'; // ライブラリを使用してデータベース接続 → クエリ実行が可能に
 
 // データベース接続プールの作成（接続プールとは、複数のクライアントからの接続を管理するための機能）
 const pool = mysql.createPool({
@@ -11,4 +11,4 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-module.exports = pool;
+export default pool;

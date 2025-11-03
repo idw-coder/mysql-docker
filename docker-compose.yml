@@ -21,11 +21,17 @@ services:
     tty: true  # 疑似ターミナルを割り当て
     ports:
       - '3000:3000'
+
+      # VSCodeのDev Containersでデバッグ、9229 = Node.jsのデバッグプロトコル用の標準ポート
+      - '9229:9229'
     volumes:
       - ./src:/app
     working_dir: /app
     # command: npm run watch  # コンテナ起動時に実行するコマンド ローカルでするとOK
-    command: npm run start
+    # command: npm run start
+
+    # 
+    command: node --inspect=0.0.0.0:9229 -r ts-node/register ./bin/www.ts 
     depends_on:
       - mysql
 

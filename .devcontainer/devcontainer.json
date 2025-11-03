@@ -1,0 +1,25 @@
+{
+    "name": "Notion Clone Backend",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/app",
+    
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "dbaeumer.vscode-eslint",
+          "esbenp.prettier-vscode",
+          "Prisma.prisma"
+        ],
+        "settings": {
+          "terminal.integrated.defaultProfile.linux": "bash"
+        }
+      }
+    },
+  
+    "forwardPorts": [3000, 3306],
+    
+    "postCreateCommand": "npm install",
+    
+    "remoteUser": "node"
+  }

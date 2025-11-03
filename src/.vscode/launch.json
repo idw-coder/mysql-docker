@@ -6,7 +6,7 @@
         "request": "attach",
         "name": "Docker: Attach to Node",
         "remoteRoot": "/app",
-        "localRoot": "${workspaceFolder}/src",
+        "localRoot": "${workspaceFolder}",
         "protocol": "inspector",
         "port": 9229,
         "restart": true,
